@@ -10,8 +10,8 @@ We will also prototype a CNN that makes the same predictions so that we can comp
 
 ## How will we evaluate the results?
 ```
-Root Mean Squared Error (RMSE), confusion matrices, ROC AUC, precision, recall. C
-omparing the effects preprocessing has on machine learning model effectiveness.
+Root Mean Squared Error (RMSE), confusion matrices, ROC AUC, precision, recall. 
+Comparing the effects preprocessing has on machine learning model effectiveness.
 ```
 
 ## Project Members
