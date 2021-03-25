@@ -24,6 +24,9 @@ Frank Joseph Serdenia, Anne Xaymountry, Daniel Palencia, Gaven Grantz, Tomothy T
 Scikit-Learn, LightGBM, Matplotlib / SeaBorn, Jupyter Notebook, Pytorch, OpenCV
 ```
 
+## Dataset Download
+[Download dataset here] (http://www.astromatic.net/projects/efigi)
+
 ## References
 ```
 Deep Galaxy: Classification of Galaxies based on Deep Convolutional Neural Networks
