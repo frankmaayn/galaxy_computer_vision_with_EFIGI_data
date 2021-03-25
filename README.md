@@ -25,7 +25,7 @@ Scikit-Learn, LightGBM, Matplotlib / SeaBorn, Jupyter Notebook, Pytorch, OpenCV
 ```
 
 ## Dataset Download
-[Download dataset here] (http://www.astromatic.net/projects/efigi)
+[Download dataset here](http://www.astromatic.net/projects/efigi)
 
 ## References
 ```
