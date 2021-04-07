@@ -22,7 +22,7 @@ def extract_image_features(image_root_path, label_dataset_path,  output_file: st
 
     for image in images:
         # The loop that extracts features.        
-        # Get 4 keypoints.
+        # Get 2 keypoints.
         sift = cv2.SIFT_create(2)
 
         # Get SIFT histograms for them,
@@ -30,9 +30,8 @@ def extract_image_features(image_root_path, label_dataset_path,  output_file: st
         kp, descriptions = sift.detectAndCompute(image, None)
         descriptions = [n for description in descriptions[0:2] for n in description]
         features.append(descriptions)
-        print(len(descriptions))
+    
     features = np.array(features)
-    print(features.shape)
     
     for i in range(features.shape[1]):
         column_names.append("SIFT_" + str(i))
