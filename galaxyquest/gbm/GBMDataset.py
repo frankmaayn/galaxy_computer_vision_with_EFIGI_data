@@ -17,15 +17,6 @@ class GBMDataset(object):
         label_dataframe = pd.read_csv(label_file_path)
         self.pgc_ids = label_dataframe["PGCname"]
 
-    
-    def preprocess_image(self, image):
-        # Preprocess the image here.
-        # For now this is just returning a list with only the mean of the image.
-        # We can add onto this and apply the SIFT algorithm here,
-        # extracting features from the image and assembling them into the return list.
-        mean = np.mean(image)
-        return [mean]
-    
     def __len__(self):
         return len(self.pgc_ids)
 
