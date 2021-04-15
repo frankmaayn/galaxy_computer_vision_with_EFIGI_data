@@ -4,7 +4,7 @@ import pandas as pd
 import os
 
 if __name__ == "__main__":
-    convert_image_to_binary_threshold("C:\Users\serde\Desktop\COMP 442\Project\galaxy_computer_vision_with_EFIGI_data\images",  "../../galaxy_computer_vision_with_EFIGI_data/datasets/EFIGI_labels.csv")
+    convert_image_to_binary_threshold(r"C:\Users\serde\Desktop\COMP 442\Project\galaxy_computer_vision_with_EFIGI_data\images",  "../../galaxy_computer_vision_with_EFIGI_data/datasets/EFIGI_labels.csv")
 
 
 # Loads the images
@@ -38,7 +38,7 @@ def convert_image_to_binary_threshold(image_root_path, label_dataset_path):
         ret,th1 = cv.threshold(image,127,255,cv.THRESH_BINARY)
 
         #Save the image to the new folder
-        cv.imwrite(os.path.join(new_image_root_path,pg_ids[i] + '.png'),th1)
+        cv.imwrite(os.path.join(new_image_root_path,pgc_ids[i] + '.png'),th1)
         i = i +1;
 
 
