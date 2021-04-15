@@ -1,1 +1,3 @@
-from galaxyquest import HelloWorld
+import galaxyquest.cnn
+import galaxyquest.gbm
+import galaxyquest.utilities
