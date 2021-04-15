@@ -7,31 +7,51 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class GBM:
-    def __init__(self, sift_feature_file):
+    def __init__(self, sift_feature_file, num_sift_features, model = None):
         """ 
             Takes path to a GBM dataset file.
         """
-        self.model = LGBMClassifier(objective="multiclass")
-        self.load_data(sift_feature_file)
 
-    def load_data(self, sift_feature_file):
+        # Load a model from a file if one is supplied,
+        # or create a new one if none is specified.
+        if model == None:
+            self.model = LGBMClassifier(objective="multiclass")
+        else:
+            self.model = model
+        self.load_data(sift_feature_file, num_sift_features)
+
+
+    def load_data(self, sift_feature_file, num_sift_features):
         """
             Assign training data and labels from a .csv of extracted features.
         """
         feature_data = pd.read_csv(sift_feature_file)
-        self.train_data = feature_data.iloc[:, 2:257]
-        self.train_labels = feature_data["label_name"]
+        sift_column_labels = ["SIFT_" + str(i) for i in range(num_sift_features)]
+        self.train_data = np.array(feature_data[sift_column_labels])
+        self.train_labels = np.array(feature_data["label_name"])
         self.unique_labels = np.unique(feature_data["label_name"])
+
+
+    def train(self, test_percent, val_percent):
+        # First split the data into train and test sets.
+        X_train, self.X_test, y_train, self.y_test = train_test_split(self.train_data, self.train_labels, stratify=self.train_labels, test_size=test_percent)
+    
+        # Then split the train data into train and validation sets.
+        # TODO: Make sure validation proportion is relative to the original dataset site (I think it's splitting on the split here)
+        X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=val_percent)
+
+        
+        self.model.fit(X_train, y_train, eval_set = [(X_val, y_val)], verbose=True)
+
+
 
     def plot_confusion_matrix(self):
         """
             Perform a single train/test split and plot the confusion matrix for all labels.
         """
-        X_train, X_test, y_train, y_test = train_test_split(self.train_data, self.train_labels, stratify=self.train_labels)
-        self.model.fit(X_train, y_train)
         fig, ax = plt.subplots()
         fig.set_size_inches((10,10))
-        plot_confusion_matrix(self.model, X_test, y_test, ax=ax)
+        plot_confusion_matrix(self.model, self.X_test, self.y_test, ax=ax)
         plt.show()
 
     def cross_validate(self, folds): 
