@@ -15,8 +15,9 @@ def extract_image_features(image_root_path, label_dataset_path,  output_file: st
 
     # Load images into a list.
     images = load_images_from_folder(pgc_ids, image_root_path)
-    column_names = ["pgc_id"]
+    column_names = ["pgc_id", "labels"]
     features = []
+    labels = []
     empty_kp_counter = 0
     pgc_ids_filtered = []
 
@@ -32,6 +33,7 @@ def extract_image_features(image_root_path, label_dataset_path,  output_file: st
 
         if descriptions is not None:
             if len(descriptions) >= 2:
+                labels.append(label_dataframe["category_label_names"][i])
                 description_list = []
                 for description in descriptions[0:2]:
                     for n in description:
@@ -49,7 +51,9 @@ def extract_image_features(image_root_path, label_dataset_path,  output_file: st
     for i in range(features.shape[1]):
         column_names.append("SIFT_" + str(i))
 
+
     dataframe_np = np.reshape(pgc_ids_filtered, (-1, 1))
+    dataframe_np = np.append(dataframe_np, np.reshape(labels, (-1, 1)), 1)
     dataframe_np = np.append(dataframe_np, features, 1)
 
     feature_dataframe = pd.DataFrame(
