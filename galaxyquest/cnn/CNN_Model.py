@@ -20,7 +20,7 @@ class Model:
         # Train split
         first_split = StratifiedShuffleSplit(n_splits=1, test_size=(test_size + val_size))
         (train_index, split_index) = next(first_split.split(np.zeros(self.dataset_size), self.dataset.get_labels()))
-        second_split = StratifiedShuffleSplit(n_splits=1, test_size=val_size)
+        second_split = StratifiedShuffleSplit(n_splits=1, test_size=(test_size / (test_size + val_size)))
         second_split_size = len(split_index)
         (test_index, val_index) = next(second_split.split(np.zeros(second_split_size), self.dataset.get_labels(split_index)))
 
@@ -59,6 +59,7 @@ class Model:
         
 
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        model = self.model.to(device)
 
         best_model_wts = copy.deepcopy(self.model.state_dict())
         best_acc = 0.0
@@ -113,27 +114,27 @@ class Model:
 
                     # statistics
                     running_loss += loss.item() * inputs.size(0)
-                    running_corrects += torch.sum(preds == labels.data)
+                    running_corrects += int(torch.sum(preds == labels.data))
 
                     if phase == "test":
-                        epoch_metrics["ground_truth_labels"][epoch].extend(labels.toList())
-                        epoch_metrics["predicted_labels"][epoch].extend(preds.toList())
+                        epoch_metrics["ground_truth_labels"][epoch].extend(labels.flatten().tolist())
+                        epoch_metrics["predicted_labels"][epoch].extend(preds.flatten().tolist())
 
                 if phase == 'train':
                     scheduler.step()
 
-                epoch_loss = running_loss / self.dataset_sizes[phase]
-                epoch_acc = running_corrects.double() / self.dataset_sizes[phase]
+                epoch_loss = float(running_loss) / self.dataset_sizes[phase]
+                epoch_acc = float(running_corrects) / self.dataset_sizes[phase]
 
                 print('{} Loss: {:.4f} Acc: {:.4f}'.format(
                     phase, epoch_loss, epoch_acc))
 
-                # deep copy the model
-                # Evaluate the model against the test set in the val phase as well.
+                # deep copy the model if it's the best accuracy seen so far
                 if phase == 'val' and epoch_acc > best_acc:
                     best_acc = epoch_acc
                     best_model_wts = copy.deepcopy(self.model.state_dict())
-                    
+
+                # Evaluate the model against the test set in the test phase
                 if phase == 'test':
                     epoch_metrics["epoch_acc"].append(epoch_acc)
                     epoch_metrics["epoch_loss"].append(epoch_loss)
@@ -153,5 +154,5 @@ class Model:
 
     def save_eval_results(self, out_path = "cnn_eval.p"):
         with open(out_path, "wb") as out_file:
-            pickle.dump(self.eval_results)
+            pickle.dump(self.eval_results, out_file)
  
