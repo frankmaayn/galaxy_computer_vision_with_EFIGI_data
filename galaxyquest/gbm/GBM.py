@@ -40,7 +40,6 @@ class GBM:
         # TODO: Make sure validation proportion is relative to the original dataset site (I think it's splitting on the split here)
         X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=val_percent)
 
-        
         self.model.fit(X_train, y_train, eval_set = [(X_val, y_val)], verbose=True)
 
 
