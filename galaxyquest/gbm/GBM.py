@@ -5,6 +5,7 @@ import lightgbm as lgb
 from lightgbm import LGBMClassifier
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.model_selection import StratifiedKFold
 
 class GBM:
     def __init__(self, sift_feature_file, num_sift_features, model = None):
@@ -28,8 +29,8 @@ class GBM:
         feature_data = pd.read_csv(sift_feature_file)
         sift_column_labels = ["SIFT_" + str(i) for i in range(num_sift_features)]
         self.train_data = np.array(feature_data[sift_column_labels])
-        self.train_labels = np.array(feature_data["label_name"])
-        self.unique_labels = np.unique(feature_data["label_name"])
+        self.train_labels = np.array(feature_data["label"])
+        self.unique_labels = np.unique(feature_data["label"])
 
 
     def train(self, test_percent, val_percent):
@@ -41,8 +42,6 @@ class GBM:
         X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=val_percent)
 
         self.model.fit(X_train, y_train, eval_set = [(X_val, y_val)], verbose=True)
-
-
 
     def plot_confusion_matrix(self):
         """
@@ -67,4 +66,32 @@ class GBM:
         return cross_validate(self.model, self.train_data, self.train_labels, cv=folds, scoring=scoring)
 
 
-    
+    def cross_validate_predict(self, folds):
+        """
+            Get cross validated predictions for a few test sets.
+        """
+        cv_truth_labels = []
+        cv_predictions = []
+        kf = StratifiedKFold(n_splits = folds)
+        for train_index, test_index in kf.split(np.zeros(len(self.train_labels)), self.train_labels):
+            X_train, X_test = self.train_data[train_index], self.train_data[test_index]
+            y_train, y_test = self.train_labels[train_index], self.train_labels[test_index]
+
+            self.model.fit(X_train, y_train)
+            cv_truth_labels.append(y_test)
+            cv_predictions.append(self.model.predict(X_test))
+        
+        return {
+            "predictions": cv_predictions,
+            "ground_truth_labels": cv_truth_labels
+        }
+
+        
+    def tts_predict(self):
+        X_train, X_test, y_train, y_test = train_test_split(self.train_data, self.train_labels)
+        self.model.fit(X_train, y_train)
+        y_predict = self.model.predict(X_test)
+        return {
+            "predictions": [y_predict],
+            "ground_truth_labels": [y_test]
+        }

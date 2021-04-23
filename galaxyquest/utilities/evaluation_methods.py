@@ -1,9 +1,9 @@
 from sklearn.metrics import multilabel_confusion_matrix
 import numpy as np
-def get_metrics_by_epoch(y_pred_epochs, y_true_epochs):
+def get_metrics_by_epoch(y_pred_epochs, y_true_epochs, label_names = None):
 
     # Get number of labels and number of epochjs
-    num_labels = np.unique(y_pred_epochs).shape[0]
+    num_labels = len(np.unique(y_true_epochs[0]))
     num_epochs = len(y_pred_epochs)
 
     # Initialize the metric dictionary
@@ -26,7 +26,7 @@ def get_metrics_by_epoch(y_pred_epochs, y_true_epochs):
         for epoch_index in range(num_epochs):
             y_pred = y_pred_epochs[epoch_index]
             y_true = y_true_epochs[epoch_index]
-            epoch_confusion_matrix = multilabel_confusion_matrix(y_pred, y_true)
+            epoch_confusion_matrix = multilabel_confusion_matrix(y_pred, y_true, labels=label_names)
 
             # Gather true positives, false positives, false negatives, true negatives
             # (tp, fp, fn, tn)
