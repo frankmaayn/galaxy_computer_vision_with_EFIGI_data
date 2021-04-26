@@ -28,10 +28,11 @@ class GBM:
         """
         feature_data = pd.read_csv(sift_feature_file)
         label_data = pd.read_csv(label_file)
+        feature_data = label_data.merge(feature_data.set_index("pgc_id"), on="pgc_id", how="inner")
         sift_column_labels = ["SIFT_" + str(i) for i in range(num_sift_features)]
         self.train_data = np.array(feature_data[sift_column_labels])
-        self.train_labels = np.array(feature_data["label"])
-        self.unique_labels = np.unique(feature_data["label"])
+        self.train_labels = np.array(feature_data["category_label"])
+        self.unique_labels = np.unique(feature_data["category_label"])
 
 
     def train(self, test_percent, val_percent):
@@ -44,13 +45,16 @@ class GBM:
 
         self.model.fit(X_train, y_train, eval_set = [(X_val, y_val)], verbose=True)
 
-    def plot_confusion_matrix(self):
+    def plot_confusion_matrix(self, labels):
         """
             Perform a single train/test split and plot the confusion matrix for all labels.
         """
         fig, ax = plt.subplots()
         fig.set_size_inches((10,10))
         plot_confusion_matrix(self.model, self.X_test, self.y_test, ax=ax)
+        x_locs = range(len(self.unique_labels))
+        plt.xticks(x_locs, labels)
+        plt.yticks(x_locs, labels)
         plt.show()
 
     def cross_validate(self, folds): 

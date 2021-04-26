@@ -1,5 +1,7 @@
 from sklearn.metrics import multilabel_confusion_matrix
 import numpy as np
+import matplotlib.pyplot as plt
+
 def get_metrics_by_epoch(y_pred_epochs, y_true_epochs, label_names = None):
 
     # Get number of labels and number of epochjs
@@ -44,3 +46,24 @@ def get_metrics_by_epoch(y_pred_epochs, y_true_epochs, label_names = None):
             metric_dict["epoch_recalls"][label_index].append(recall)
             metric_dict["epoch_f1"][label_index].append(f1)
     return metric_dict
+
+def plot_metric_byclass(epoch_metrics, metric, labels, title):
+
+    fig, ax = plt.subplots(figsize=(10, 10))
+    fig.suptitle(title)
+    ax.set_title("Final " + metric + " by class")
+    ax.set_xlabel("Class")
+    ax.set_ylabel("Accuracy")
+
+    metric_list = []
+
+    for i in range(len(epoch_metrics["epoch_" + metric])):
+        metric_list.append(epoch_metrics["epoch_" + metric][i][-1])
+
+    x_locs = range(len(metric_list))
+    for i,  v in enumerate(metric_list):
+        plt.text(x_locs[i] - 0.12, v + 0.01, "{:.2f}".format(v))
+
+    
+    plt.bar(x_locs, metric_list)
+    plt.xticks(x_locs, labels)
