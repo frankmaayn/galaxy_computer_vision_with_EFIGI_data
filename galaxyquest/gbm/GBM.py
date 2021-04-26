@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import StratifiedKFold
 
 class GBM:
-    def __init__(self, sift_feature_file, num_sift_features, model = None):
+    def __init__(self, sift_feature_file, label_file, num_sift_features, model = None):
         """ 
             Takes path to a GBM dataset file.
         """
@@ -19,14 +19,15 @@ class GBM:
             self.model = LGBMClassifier(objective="multiclass")
         else:
             self.model = model
-        self.load_data(sift_feature_file, num_sift_features)
+        self.load_data(sift_feature_file, label_file, num_sift_features)
 
 
-    def load_data(self, sift_feature_file, num_sift_features):
+    def load_data(self, sift_feature_file, label_file, num_sift_features):
         """
             Assign training data and labels from a .csv of extracted features.
         """
         feature_data = pd.read_csv(sift_feature_file)
+        label_data = pd.read_csv(label_file)
         sift_column_labels = ["SIFT_" + str(i) for i in range(num_sift_features)]
         self.train_data = np.array(feature_data[sift_column_labels])
         self.train_labels = np.array(feature_data["label"])
