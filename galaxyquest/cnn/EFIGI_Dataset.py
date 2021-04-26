@@ -35,9 +35,11 @@ class EFIGIDataset(Dataset):
         image = Image.open(image_path)
         image = self.transform(image)
         image_label = self.labels[idx]
+        pgc_id = self.pgc_ids[idx]
         return {
             "image": image,
-            "label": image_label
+            "label": image_label,
+            "pgc_id": pgc_id
         }
 
     def get_labels(self, idx = None):

@@ -69,7 +69,8 @@ class Model:
             "epoch_loss": [],
             "predicted_labels": [],
             "prediction_probabilities": [],
-            "ground_truth_labels": []
+            "ground_truth_labels": [],
+            "pgc_ids": []
         }
 
         for epoch in range(num_epochs):
@@ -87,6 +88,7 @@ class Model:
                     epoch_metrics["predicted_labels"].append([])
                     epoch_metrics["prediction_probabilities"].append([])
                     epoch_metrics["ground_truth_labels"].append([])
+                    epoch_metrics["pgc_ids"].append([])
 
                 running_loss = 0.0
                 running_corrects = 0
@@ -96,6 +98,7 @@ class Model:
                     
                     inputs = sample["image"].to(device)
                     labels = sample["label"].to(device)
+                    pgc_ids = sample["pgc_id"]
 
                     # zero the parameter gradients
                     optimizer.zero_grad()
@@ -119,6 +122,7 @@ class Model:
                     if phase == "test":
                         epoch_metrics["ground_truth_labels"][epoch].extend(labels.flatten().tolist())
                         epoch_metrics["predicted_labels"][epoch].extend(preds.flatten().tolist())
+                        epoch_metrics["pgc_ids"][epoch].extend(pgc_ids)
 
                 if phase == 'train':
                     scheduler.step()
