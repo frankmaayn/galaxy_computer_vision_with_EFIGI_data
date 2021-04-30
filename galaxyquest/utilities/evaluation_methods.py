@@ -53,7 +53,7 @@ def plot_metric_byclass(epoch_metrics, metric, labels, title):
     fig.suptitle(title)
     ax.set_title("Final " + metric + " by class")
     ax.set_xlabel("Class")
-    ax.set_ylabel("Accuracy")
+    ax.set_ylabel(metric)
 
     metric_list = []
 
