@@ -1,9 +1,11 @@
 from sklearn.metrics import multilabel_confusion_matrix
 import numpy as np
-def get_metrics_by_epoch(y_pred_epochs, y_true_epochs):
+import matplotlib.pyplot as plt
+
+def get_metrics_by_epoch(y_pred_epochs, y_true_epochs, label_names = None):
 
     # Get number of labels and number of epochjs
-    num_labels = np.unique(y_pred_epochs).shape[0]
+    num_labels = len(np.unique(y_true_epochs[0]))
     num_epochs = len(y_pred_epochs)
 
     # Initialize the metric dictionary
@@ -26,7 +28,7 @@ def get_metrics_by_epoch(y_pred_epochs, y_true_epochs):
         for epoch_index in range(num_epochs):
             y_pred = y_pred_epochs[epoch_index]
             y_true = y_true_epochs[epoch_index]
-            epoch_confusion_matrix = multilabel_confusion_matrix(y_pred, y_true)
+            epoch_confusion_matrix = multilabel_confusion_matrix(y_pred, y_true, labels=label_names)
 
             # Gather true positives, false positives, false negatives, true negatives
             # (tp, fp, fn, tn)
@@ -44,3 +46,24 @@ def get_metrics_by_epoch(y_pred_epochs, y_true_epochs):
             metric_dict["epoch_recalls"][label_index].append(recall)
             metric_dict["epoch_f1"][label_index].append(f1)
     return metric_dict
+
+def plot_metric_byclass(epoch_metrics, metric, labels, title):
+
+    fig, ax = plt.subplots(figsize=(10, 10))
+    fig.suptitle(title)
+    ax.set_title("Final " + metric + " by class")
+    ax.set_xlabel("Class")
+    ax.set_ylabel(metric)
+
+    metric_list = []
+
+    for i in range(len(epoch_metrics["epoch_" + metric])):
+        metric_list.append(epoch_metrics["epoch_" + metric][i][-1])
+
+    x_locs = range(len(metric_list))
+    for i,  v in enumerate(metric_list):
+        plt.text(x_locs[i] - 0.12, v + 0.01, "{:.2f}".format(v))
+
+    
+    plt.bar(x_locs, metric_list)
+    plt.xticks(x_locs, labels)
