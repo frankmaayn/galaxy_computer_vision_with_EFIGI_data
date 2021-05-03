@@ -30,6 +30,7 @@ class Model:
         num_test_samples = len(test_index)
         num_val_samples = len(val_index)
 
+
         self.dataset_sizes = {
             "train": num_train_samples,
             "test": num_test_samples,
@@ -69,6 +70,7 @@ class Model:
             "epoch_loss": [],
             "predicted_labels": [],
             "prediction_probabilities": [],
+            "prediction_confidences": [],
             "ground_truth_labels": [],
             "pgc_ids": []
         }
@@ -89,6 +91,7 @@ class Model:
                     epoch_metrics["prediction_probabilities"].append([])
                     epoch_metrics["ground_truth_labels"].append([])
                     epoch_metrics["pgc_ids"].append([])
+                    epoch_metrics["prediction_confidences"].append([])
 
                 running_loss = 0.0
                 running_corrects = 0
@@ -107,7 +110,11 @@ class Model:
                     # track history if only in train
                     with torch.set_grad_enabled(phase == 'train'):
                         outputs = self.model(inputs)
-                        _, preds = torch.max(outputs, 1)
+                        confidence, preds = torch.max(outputs, 1)
+
+                        # Normalize output scores to a probability.
+                        confidence = nn.functional.softmax(confidence, dim=0)
+                        
                         loss = criterion(outputs, labels)
 
                         # backward + optimize only if in training phase
@@ -123,6 +130,7 @@ class Model:
                         epoch_metrics["ground_truth_labels"][epoch].extend(labels.flatten().tolist())
                         epoch_metrics["predicted_labels"][epoch].extend(preds.flatten().tolist())
                         epoch_metrics["pgc_ids"][epoch].extend(pgc_ids)
+                        epoch_metrics["prediction_confidences"][epoch].extend(confidence.flatten().tolist())
 
                 if phase == 'train':
                     scheduler.step()
