@@ -18,6 +18,9 @@ ipython_config.py
 
 # Ignore large pytorch model files
 *.pt
+\
+
+*.zip
 
 # Remove previous ipynb_checkpoints
 #   git rm -r .ipynb_checkpoints/
