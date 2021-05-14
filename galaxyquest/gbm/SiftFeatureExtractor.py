@@ -11,7 +11,7 @@ def extract_image_features(image_root_path, label_dataset_path,  output_file: st
     # Dataframe of image labels.
     # Also contains PGC ID's of all images.
     label_dataframe = pd.read_csv(label_dataset_path)
-    pgc_ids = np.array(label_dataframe["PGCname"])
+    pgc_ids = np.array(label_dataframe["pgc_id"])
 
     # Load images into a list.
     images = load_images_from_folder(pgc_ids, image_root_path)
@@ -25,24 +25,24 @@ def extract_image_features(image_root_path, label_dataset_path,  output_file: st
     for i in range(len(images)):
         # The loop that extracts features.        
         # Get 2 keypoints.
-        sift = cv2.SIFT_create(2)
+        sift = cv2.SIFT_create(8)
 
         # Get SIFT histograms for them,
         # and append these to the feature list.
         kp, descriptions = sift.detectAndCompute(images[i], None)
 
         if descriptions is not None:
-            if len(descriptions) >= 2:
+            if len(descriptions) >= 8:
                 labels.append(label_dataframe["category_label_names"][i])
                 description_list = []
-                for description in descriptions[0:2]:
+                for description in descriptions[0:8]:
                     for n in description:
                         description_list.append(n)
                 features.append(description_list)
                 pgc_ids_filtered.append(pgc_ids[i])
                 #descriptions = [n for description in descriptions[0:2] for n in description]
-        else:
-            empty_kp_counter += 1
+            else:
+                empty_kp_counter += 1
 
     print(empty_kp_counter)
     features = np.array(features)
@@ -73,4 +73,4 @@ def load_images_from_folder(pgc_ids, image_root_path):
     return images
 
 if __name__ == "__main__":
-    extract_image_features(r"C:\Users\dpale\Desktop\Projects\galaxy_computer_vision_with_EFIGI_data\threshold_image",  r"C:\Users\dpale\Desktop\Projects\galaxy_computer_vision_with_EFIGI_data\datasets\EFIGI_labels.csv", r"EFIGI_SIFT_feature_data_2kp_threshold.csv")
+    extract_image_features(r"C:\Users\dpale\Desktop\Projects\galaxy_computer_vision_with_EFIGI_data\images",  r"C:\Users\dpale\Desktop\Projects\galaxy_computer_vision_with_EFIGI_data\datasets\EFIGI_labels.csv", r"EFIGI_SIFT_feature_data_8kp_nothreshold.csv")

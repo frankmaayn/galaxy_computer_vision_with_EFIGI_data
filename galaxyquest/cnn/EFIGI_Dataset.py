@@ -12,7 +12,7 @@ class EFIGIDataset(Dataset):
         self.label_dataframe = pd.read_csv(label_path)
         self.labels = np.array(self.label_dataframe["category_label"])
         self.labels = torch.from_numpy(self.labels)
-        self.pgc_ids = list(self.label_dataframe["PGCname"])
+        self.pgc_ids = list(self.label_dataframe["pgc_id"])
 
         # Normalize images into [0, 1] with the expected mean and stds.
         self.transform = transforms.Compose([
