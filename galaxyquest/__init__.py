@@ -1,3 +1,3 @@
-import galaxyquest.cnn
-import galaxyquest.gbm
-import galaxyquest.utilities
+from galaxyquest import cnn
+from galaxyquest import gbm
+from galaxyquest import utilities
